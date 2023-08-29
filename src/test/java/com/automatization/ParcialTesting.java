@@ -55,7 +55,7 @@ class ParcialTesting {
 
         firstNameField.sendKeys("Jhon");
         lastName.sendKeys("Doe");
-        email.sendKeys("jhonDoe999@gmail.com");
+        email.sendKeys("johoen2385@gmail.com");
         telephone.sendKeys("321657093");
         password.sendKeys("Jhon304+");
         confirm.sendKeys("Jhon304+");
