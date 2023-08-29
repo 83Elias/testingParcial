@@ -1,10 +1,14 @@
 package com.automatization;
 
+import com.automatization.base.BasePage;
+import com.automatization.product.ProductPage;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -14,7 +18,9 @@ import java.time.Duration;
 
 class ParcialTesting {
 
-    private  WebDriver driver;
+    private WebDriver driver;
+    private BasePage basePage;
+    private ProductPage productPage;
 
     @BeforeEach
     void initApp() throws IOException {
@@ -24,7 +30,10 @@ class ParcialTesting {
         System.setProperty("webdriver.chrome.driver", chromeDriverFile.getAbsolutePath());
         System.setProperty("webdriver.http.factory", "jdk-http-client");
 
-         driver = new ChromeDriver();
+        driver = new ChromeDriver();
+        basePage = new BasePage(driver);
+        productPage = new ProductPage(driver);
+
     }
 
 
@@ -75,23 +84,18 @@ class ParcialTesting {
     @Test
     @Tag("smoke")
     void findProductAndAddToCartAutomatization() throws InterruptedException {
+
         driver.get("https://opencart.abstracta.us/index.php?route=common/home");
         String title= driver.getTitle();
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
 
-        WebElement findProduct=driver.findElement(By.xpath("//*[@id=\"search\"]/input"));
-        findProduct.clear();
-        findProduct.sendKeys("iphone");
-        Thread.sleep(1000);
-        driver.findElement(By.xpath("//*[@id=\"search\"]/span/button")).click();
-        Thread.sleep(1000);
-        driver.findElement(By.xpath("//*[@id=\"content\"]/div[3]/div/div/div[2]/div[2]/button[1]")).click();
-        Thread.sleep(1000);
-        WebElement sucessMessageAdd=driver.findElement(By.xpath("//*[@id=\"product-search\"]/div[1]"));
-        System.out.println(sucessMessageAdd.getText());
-        Thread.sleep(1000);
+        productPage.searchForProduct("iphone");
+        productPage.addToCart();
+
+        String successMessage = productPage.getSuccessMessage();
+
         Assertions.assertTrue(title.contains("Your Store"));
-        Assertions.assertTrue(sucessMessageAdd.getText().contains("Success: You have added iPhone to your shopping cart!"));
+        Assertions.assertTrue(successMessage.contains("Success: You have added iPhone to your shopping cart!"));
     }
 
     @AfterEach
